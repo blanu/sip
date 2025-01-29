@@ -1,28 +1,80 @@
 import sys
 
 from sip.api import set_port, eval, evalNoun
-from sip.register import SerialEvalRegister
-from iota.storage import Word
-from testify import TestCase, assert_equal, assert_raises
+from testify import TestCase, assert_equal
 
 #set_port(sys.argv[1])
 set_port("/dev/cu.usbmodem1101")
 
 class NounTests(TestCase):
-    def test_word_zero(self):
+    def test_small_word(self):
         assert_equal(evalNoun(0), 0)
-
-    def test_word_ten(self):
         assert_equal(evalNoun(1), 1)
-
-    def test_word_negative_one(self):
         assert_equal(evalNoun(-1), -1)
-
-    def test_word_256(self):
-        assert_equal(evalNoun(256), 256)
-
-    def test_word_negative_256(self):
+        assert_equal(evalNoun(256), 256) # requires two bytes
         assert_equal(evalNoun(-256), -256)
+        assert_equal(evalNoun(2048), 2048)
+        assert_equal(evalNoun(-2048), -2048)
+        assert_equal(evalNoun(32768), 32768) # requires two bytes
+        assert_equal(evalNoun(-32768), -32768) # requires three bytes
+        assert_equal(evalNoun(8388608), 8388608) # requires three bytes
+        assert_equal(evalNoun(-8388608), -8388608) # requires three bytes
+        assert_equal(evalNoun(16777215), 16777215) # three-byte maxint
+        assert_equal(evalNoun(-16777215), -16777215)
+
+    def test_big_word(self):
+        assert_equal(evalNoun(2147483648), 2147483648)  # requires 4 bytes
+        assert_equal(evalNoun(-2147483648), -2147483648)  # requires 4 bytes
+        assert_equal(evalNoun(4294967295), 4294967295) # unsigned 32-bit maxint
+        assert_equal(evalNoun(-4294967295), -4294967295)
+        assert_equal(evalNoun(549755813888), 549755813888) # requires 5 bytes
+        assert_equal(evalNoun(-549755813888), -549755813888) # requires 5 bytes
+        assert_equal(evalNoun(10000000000), 10000000000) # too big for 32-bit
+        assert_equal(evalNoun(-10000000000), -10000000000)
+        assert_equal(evalNoun(9223372036854775807), 9223372036854775807) # signed 64-bit max
+        assert_equal(evalNoun(-9223372036854775807), -9223372036854775807) # signed 64-bit max
+
+    def test_float(self):
+        assert_equal(evalNoun(0.0), 0.0)
+        assert_equal(evalNoun(1.0), 1.0)
+        assert_equal(evalNoun(-1.0), -1.0)
+        assert_equal(evalNoun(100.0), 100.0)
+        assert_equal(evalNoun(-100.0), -100.0)
+
+    def test_words(self):
+        assert_equal(evalNoun([0]), [0])
+        assert_equal(evalNoun([1]), [1])
+        assert_equal(evalNoun([-1]), [-1])
+        assert_equal(evalNoun([256]), [256])
+        assert_equal(evalNoun([-256]), [-256])
+
+        assert_equal(evalNoun([0, 1]), [0, 1])
+        assert_equal(evalNoun([1, 2]), [1, 2])
+        assert_equal(evalNoun([-1, 1]), [-1, 1])
+        assert_equal(evalNoun([256, 1024]), [256, 1024])
+        assert_equal(evalNoun([-256, -1024]), [-256, -1024])
+
+    def test_floats(self):
+        assert_equal(evalNoun([0.0]), [0.0])
+        assert_equal(evalNoun([1.0]), [1.0])
+        assert_equal(evalNoun([-1.0]), [-1.0])
+        assert_equal(evalNoun([256.0]), [256.0])
+        assert_equal(evalNoun([-256.0]), [-256.0])
+
+        assert_equal(evalNoun([0.0, 1.0]), [0.0, 1.0])
+        assert_equal(evalNoun([1.0, 2.0]), [1.0, 2.0])
+        assert_equal(evalNoun([-1.0, 1.0]), [-1.0, 1.0])
+        assert_equal(evalNoun([256.0, 1024.0]), [256.0, 1024.0])
+        assert_equal(evalNoun([-256.0, -1024.0]), [-256.0, -1024.0])
+
+    def test_mixed(self):
+        assert_equal(evalNoun([0, 0.0]), [0, 0.0])
+        assert_equal(evalNoun([1.0, 1]), [1.0, 1])
+        assert_equal(evalNoun([0, [0]]), [0, [0]])
+        assert_equal(evalNoun([1.0, [2.0]]), [1.0, [2.0]])
+        assert_equal(evalNoun([[0], [0]]), [[0], [0]])
+        assert_equal(evalNoun([[1], [2]]), [[1], [2]])
+        assert_equal(evalNoun([[1.0], [2.0]]), [[1.0], [2.0]])
 
 # # Examples from the book "An Introduction to Array Programming in Klong" by Nils
 # class BookTests(TestCase):

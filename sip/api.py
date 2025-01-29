@@ -1,5 +1,5 @@
 from iota.api import Object
-from .register import SerialEvalRegister
+from sip.register import SerialEvalRegister
 
 state = {}
 
