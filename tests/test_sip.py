@@ -1,7 +1,9 @@
 import sys
 
 from sip.api import set_port, eval, evalNoun
-from testify import TestCase, assert_equal
+from testify import TestCase, assert_equal, assert_raises
+from iota.api import C
+from iota.symbols import  *
 
 #set_port(sys.argv[1])
 set_port("/dev/cu.usbmodem1101")
@@ -76,45 +78,77 @@ class NounTests(TestCase):
         assert_equal(evalNoun([[1], [2]]), [[1], [2]])
         assert_equal(evalNoun([[1.0], [2.0]]), [[1.0], [2.0]])
 
+    def test_character(self):
+        assert_equal(evalNoun(C('a')), 'a')
+        assert_equal(evalNoun(C('b')), 'b')
+        assert_equal(evalNoun(C('\x00')), '\x00')
+
+    def test_string(self):
+        assert_equal(evalNoun('a'), 'a')
+        assert_equal(evalNoun('b'), 'b')
+        assert_equal(evalNoun('ab'), 'ab')
+        assert_equal(evalNoun('😀'), '😀')
+
+    def test_eval(self):
+        assert_equal(eval(0, negate), 0)
+        assert_equal(eval(1, negate), -1)
+        assert_equal(eval(2, negate), -2)
+        assert_equal(eval(-2, negate), 2)
+
+        assert_equal(eval(1, negate, negate), 1)
+        assert_equal(eval(1, negate, negate, negate), -1)
+
 # # Examples from the book "An Introduction to Array Programming in Klong" by Nils
 # class BookTests(TestCase):
 #     pass
 #
 # # Monads
-# class AtomTests(TestCase):
-#     # integer atom -> integer, 1)
-#     # real atom -> integer, 1)
-#     # list <i size equal 0> atom -> integer, 1)
-#     # list <i size {equal 0} not> atom -> integer, 0)
-#     # list atom -> integer, 0)
-#     # char atom -> integer, 1)
-#
-#     def test_atom_word(self):
-#         assert_equal(eval(1, atom), true)
-#
-#     def test_atom_float(self):
-#         assert_equal(eval(1, atom), true)
-#
-#     def test_atom_word_array(self):
-#         assert_equal(eval([2, 3], atom), false)
-#
-#     def test_atom_real_array(self):
-#         assert_equal(eval([2, 3], atom), false)
-#
-#     def test_atom_mixed_array(self):
-#         assert_equal(eval([2, 3.0], atom), false)
-#
-#     def test_atom_integer(self):
-#         assert_equal(eval(1, atom), true)
-#
-#     def test_atom_real(self):
-#         assert_equal(eval(1, atom),  true)
-#
-#     def test_atom_list(self):
-#         assert_equal(eval([2, 3], atom),  false)
-#         assert_equal(eval([2.0, 3.0], atom),  false)
-#         assert_equal(eval([2, 3.0], atom),  false)
-#
+class AtomTests(TestCase):
+    # integer atom -> integer, 1)
+    # real atom -> integer, 1)
+    # list <i size equal 0> atom -> integer, 1)
+    # list <i size {equal 0} not> atom -> integer, 0)
+    # list atom -> integer, 0)
+    # char atom -> integer, 1)
+
+    def test_atom_integer(self):
+        assert_equal(eval(1, atom), true)
+
+    def test_atom_real(self):
+        assert_equal(eval(1.0, atom),  true)
+
+    def test_atom_list(self):
+        assert_equal(eval([], atom),  true)
+
+        assert_equal(eval([2, 3], atom),  false)
+        assert_equal(eval([2.0, 3.0], atom),  false)
+        assert_equal(eval([2, 3.0], atom),  false)
+
+    def test_atom_integer(self):
+        assert_equal(eval(C('a'), atom), true)
+
+class CharTests(TestCase):
+    def test_char_integer(self):
+        assert_equal(eval(1, char), '\x01')
+
+    def test_char_real(self):
+        with assert_raises(Exception):
+            eval(1.0, char)
+
+    def test_char_list(self):
+        assert_equal(eval([], char), [])
+
+        assert_equal(eval([2, 3], char), ['\x02', '\x03'])
+
+        with assert_raises(Exception):
+            eval([2.0, 3.0], char)
+
+        with assert_raises(Exception):
+            eval([2, 3.0], char)
+
+    def test_char_character(self):
+        assert_equal(eval(C('a'), char), 'a')
+
 # class PlusTests(TestCase):
 #     def test_plus_errors(self):
 #         with assert_raises(Exception):
