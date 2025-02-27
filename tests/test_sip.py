@@ -1567,237 +1567,237 @@ class TimesTests(TestCase):
         assert_equal(eval([2, 3.0], times, [2, 3.0]), [4, 9])
 
 # Monadic Adverbs
+class AdverbTests(TestCase):
+    def test_converge(self):
+        assert_equal(eval(1, converge, shape), 0)
+        assert_equal(eval(1.0, converge, shape), 0)
+        assert_equal(eval(C('a'), converge, shape), 0)
+        assert_equal(eval([1, 2, 3], converge, shape), [1])
+        assert_equal(eval([1.0, 2.0, 3.0], converge, shape), [1])
+        assert_equal(eval([1, 2.0, 3], converge, shape), [1])
+        assert_equal(eval([1, [2], 3], converge, shape), [1])
+        assert_equal(eval("abc", converge, shape), [1])
 
+    def test_each(self):
+        assert_equal(eval(1, each, negate), -1)
+        assert_equal(eval(1.0, each, negate), -1.0)
+        assert_equal(eval([1, 2, 3], each, negate), [-1, -2, -3])
+        assert_equal(eval([1.0, 2.0, 3.0], each, negate), [-1.0, -2.0, -3.0])
+        assert_equal(eval([1, 2.0, 3], each, negate), [-1, -2, -3])
+        assert_equal(eval([1, [2], 3], each, negate), [-1, [-2], -3])
+        assert_equal(eval(C('a'), each, reverse), 'a')
+        assert_equal(eval("abc", each, reverse), "abc")
 
-# class ReverseTests(TestCase):
-#     def test_reverse_word_array(self):
-#         assert_equal(eval([0, 1, 2], reverse), [2, 1, 0])
-#
-#     def test_reverse_list(self):
-#         assert_equal(eval([0, 1, 2], reverse), [2, 1, 0])
-#
-#     def test_reverse_list(self):
-#         assert_equal(eval([0, 1, 2], reverse), [2, 1, 0])
-#
-#
-# class RankTests(TestCase):
-#     def test_shape_word(self):
-#         assert_equal(eval(5, shape, size), 0)
-#
-#     def test_shape_real(self):
-#         assert_equal(eval(5.5, shape, size), 0)
-#
-#     def test_shape_word_array(self):
-#         assert_equal(eval([0, 1, 2], shape, size), 1)
-#
-#     def test_shape_list(self):
-#         assert_equal(eval([0.1, 1.5, 2.9], shape, size), 1)
-#
-#     def test_shape_list(self):
-#         assert_equal(eval([0, 1, [1, 2, 3]], shape, size), 1)
-#         assert_equal(eval([[0], [1], [0]], shape, size), 2)
-#
-# class AdverbTests(TestCase):
-#     def test_each(self):
-#         assert_equal(eval(1, each, negate), -1)
-#         assert_equal(eval(1, each, negate), -1.0)
-#         assert_equal(eval([1, 2, 3], each, negate), [-1, -2, -3])
-#         assert_equal(eval([1, 2, 3], each, negate), [-1.0, -2.0, -3.0])
-#         assert_equal(eval([1, 2, 3], each, negate), [-1, -2, -3])
-#
-#     def test_each2(self):
-#         assert_equal(eval(1, each2, plus, 1), 2)
-#         assert_equal(eval(1, each2, plus, 1.0), 2.0)
-#         assert_equal(eval([1, 2, 3], each2, plus, 4), [5, 6, 7])
-#         assert_equal(eval([1, 2, 3], each2, plus, 4.0), [5.0, 6.0, 7.0])
-#         assert_equal(eval([1, 2, 3], each2, plus, [4, 5, 6]), [5, 7, 9])
-#         assert_equal(eval([1, 2, 3], each2, plus, [4, 5.0, 6]), [5, 7.0, 9])
-#
-#         assert_equal(eval([1.0, 2.0, 3.0], each2, plus, 4), [5, 6, 7])
-#         assert_equal(eval([1.0, 2.0, 3.0], each2, plus, 4.0), [5.0, 6.0, 7.0])
-#         assert_equal(eval([1, 2.0, 3], each2, plus, [4, 5, 6]), [5, 7.0, 9])
-#         assert_equal(eval([1, 2.0, 3], each2, plus, [4, 5, 6]), [5, 7.0, 9])
-#
-#     def test_eachLeft(self):
-#         assert_equal(eval(1, eachLeft, plus, 4), 5)
-#         assert_equal(eval(1, eachLeft, plus, 1.0), 2.0)
-#         assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5, 6, 7])
-#         assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5, 6, 7])
-#
-#         assert_equal(eval(1, eachLeft, plus, 4), 5.0)
-#         assert_equal(eval(1, eachLeft, plus, 4.0), 5.0)
-#         assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
-#
-#         assert_equal(eval([1, 2, 3], eachLeft, plus, 4), [5, 6, 7])
-#         assert_equal(eval([1, 2, 3], eachLeft, plus, 4.0), [5, 6, 7])
-#         assert_equal(eval([1, 2, 3], eachLeft, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
-#
-#         assert_equal(eval([1, 2.0, 3], eachLeft, plus, 4), [5, 6.0, 7])
-#         assert_equal(eval([1, 2.0, 3], eachLeft, plus, 4), [5.0, 6.0, 7.0])
-#         assert_equal(eval([1, 2.0, 3], eachLeft, plus, [4, 5, 6]), [[5, 6.0, 7], [6, 7.0, 8], [7, 8.0, 9]])
-#
-#     def test_eachRight(self):
-#         assert_equal(eval(1, eachRight, plus, 4), 5)
-#         assert_equal(eval(1, eachRight, plus, 4.0), 5.0)
-#         assert_equal(eval(1, eachRight, plus, [4, 5, 6]), [5, 6, 7])
-#         assert_equal(eval(1, eachRight, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, eachRight, plus, [4, 5.0, 6]), [5, 6.0, 7])
-#
-#         assert_equal(eval(1, eachRight, plus, 4), 5.0)
-#         assert_equal(eval(1, eachRight, plus, 4.0), 5.0)
-#         assert_equal(eval(1, eachRight, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, eachRight, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, eachRight, plus, [4, 5.0, 6]), [5.0, 6.0, 7.0])
-#
-#         assert_equal(eval([1, 2, 3], eachRight, plus, 4), [5, 6, 7])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, 4.0), [5, 6, 7])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, [4.0, 5.0, 6.0]), [[5.0, 6.0, 7.0], [6.0, 7.0, 8.0], [7.0, 8.0, 9.0]])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, [4, 5.0, 6]), [[5, 6, 7], [6.0, 7.0, 8.0], [7, 8, 9]])
-#
-#         assert_equal(eval([1, 2, 3], eachRight, plus, 4), [5, 6, 7])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, 4), [5.0, 6.0, 7.0])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, [4.0, 5.0, 6.0]), [[5.0, 6.0, 7.0], [6.0, 7.0, 8.0], [7.0, 8.0, 9.0]])
-#         assert_equal(eval([1, 2, 3], eachRight, plus, [4, 5.0, 6]), [[5, 6, 7], [6.0, 7.0, 8.0], [7, 8, 9]])
-#
-#         assert_equal(eval([1, 2.0, 3], eachRight, plus, 4), [5, 6.0, 7])
-#         assert_equal(eval([1, 2.0, 3], eachRight, plus, 4.0), [5.0, 6.0, 7.0])
-#         assert_equal(eval([1, 2.0, 3], eachRight, plus, [4, 5, 6]), [[5, 6.0, 7], [6, 7.0, 8], [7, 8.0, 9]])
-#         assert_equal(eval([1, 2.0, 3], eachRight, plus, [4.0, 5.0, 6.0]), [[5.0, 6.0, 7.0], [6.0, 7.0, 8.0], [7.0, 8.0, 9.0]])
-#         assert_equal(eval([1, 2.0, 3], eachRight, plus, [4, 5.0, 6]), [[5, 6.0, 7], [6.0, 7.0, 8.0], [7, 8.0, 9]])
-#
-#     def test_eachPair(self):
-#         assert_equal(eval([4, 5, 6], eachPair, plus), [9, 11])
-#         assert_equal(eval([4.0, 5.0, 6.0], eachPair, plus), [9.0, 11.0])
-#         assert_equal(eval([4, 5.0, 6], eachPair, plus), [9.0, 11.0])
-#
-#     def test_over(self):
-#         assert_equal(eval(4, over, plus), 4)
-#         assert_equal(eval(4, over, plus), 4.0)
-#
-#         assert_equal(eval([], over, plus), [])
-#         assert_equal(eval([4], over, plus), [4])
-#         assert_equal(eval([4, 5, 6], over, plus), 15)
-#
-#         assert_equal(eval([], over, plus), [])
-#         assert_equal(eval([4], over, plus), [4])
-#         assert_equal(eval([4, 5, 6], over, plus), 15.0)
-#
-#         assert_equal(eval([], over, plus), [])
-#         assert_equal(eval([4], over, plus), [4])
-#         assert_equal(eval([4, 5, 6], over, plus), 15)
-#
-#     def test_overNeutral(self):
-#         assert_equal(eval(1, overNeutral, plus, 1), 2)
-#         assert_equal(eval(1, overNeutral, plus, 1.0), 2.0)
-#         assert_equal(eval(1, overNeutral, plus, [4, 5, 6]), [5, 6, 7])
-#         assert_equal(eval(1, overNeutral, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, overNeutral, plus, [4, 5.0, 6]), [5, 6.0, 7])
-#
-#         assert_equal(eval(1, overNeutral, plus, 1), 2.0)
-#         assert_equal(eval(1, overNeutral, plus, 1.0), 2.0)
-#         assert_equal(eval(1, overNeutral, plus, [4, 5, 6]), [5, 6, 7])
-#         assert_equal(eval(1, overNeutral, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
-#         assert_equal(eval(1, overNeutral, plus, [4, 5.0, 6]), [5.0, 6.0, 7.0])
-#
-#         assert_equal(eval([1, 2], overNeutral, plus, 1), 4)
-#         assert_equal(eval([1, 2], overNeutral, plus, 1.0), 4.0)
-#         assert_equal(eval([1, 2], overNeutral, plus, [4, 5, 6]), [7, 8, 9])
-#         assert_equal(eval([1, 2], overNeutral, plus, [4.0, 5.0, 6.0]), [7.0, 8.0, 9.0])
-#         assert_equal(eval([1, 2], overNeutral, plus, [4, 5.0, 6]), [7, 8.0, 9])
-#         with assert_raises(Exception):
-#             (eval([], overNeutral, plus, 1))
-#
-#         assert_equal(eval([1, 2], overNeutral, plus, 1), 4.0)
-#         assert_equal(eval([1, 2], overNeutral, plus, 1.0), 4.0)
-#         assert_equal(eval([1, 2], overNeutral, plus, [4, 5, 6]), [7, 8, 9])
-#         assert_equal(eval([1, 2], overNeutral, plus, [4.0, 5.0, 6.0]), [7.0, 8.0, 9.0])
-#         assert_equal(eval([1, 2], overNeutral, plus, [4, 5.0, 6]), [7, 8.0, 9])
-#         with assert_raises(Exception):
-#             (eval([], overNeutral, plus, 1))
-#
-#         assert_equal(eval([1, 2.0], overNeutral, plus, 1), 4.0)
-#         assert_equal(eval([1, 2.0], overNeutral, plus, 4.0), 7.0)
-#         assert_equal(eval([1, 2.0], overNeutral, plus, [4, 5, 6]), [7, 8, 9])
-#         assert_equal(eval([1, 2.0], overNeutral, plus, [4.0, 5.0, 6.0]), [7.0, 8.0, 9.0])
-#         assert_equal(eval([1, 2.0], overNeutral, plus, [4, 5.0, 6]), [7, 8.0, 9])
-#         with assert_raises(Exception):
-#             (eval([], overNeutral, plus, 1))
-#
-#     def test_converge(self):
-#         assert_equal(eval([1, 2, 3], converge, shape), [1])
-#
-#     def test_whileOne(self):
-#         assert_equal(eval(0, whileOne, atom, enclose), [0])
-#
-#     def test_iterate(self):
-#         assert_equal(eval([1, 2, 3], iterate, shape, 2), [1])
-#         assert_equal(eval([1, 2, 3], iterate, shape, 2), [1])
-#         assert_equal(eval([1, 2.0, 3], iterate, shape, 2), [1])
-#
-#         with assert_raises(Exception):
-#             (eval(2, iterate, shape, [1, 2, 3]))
-#         with assert_raises(Exception):
-#             (eval(-2, iterate, shape, [1, 2, 3]))
-#         with assert_raises(Exception):
-#             (eval(2, iterate, shape, [1, 2, 3]))
-#
-#     def test_scanOver(self):
-#         assert_equal(eval(1, scanOver, shape), [1])
-#
-#         assert_equal(eval([1, 2, 3], scanOver, plus), [1, 3, 6])
-#         assert_equal(eval([], scanOver, plus), [])
-#
-#         assert_equal(eval([1, 2, 3], scanOver, plus), [1.0, 3.0, 6.0])
-#         assert_equal(eval([], scanOver, plus), [])
-#
-#         assert_equal(eval([1, 2.0, 3], scanOver, plus), [1, 3.0, 6.0])
-#         assert_equal(eval([], scanOver, plus), [])
-#
-#     def test_scanOverNeutral(self):
-#         assert_equal(eval(1, scanOverNeutral, plus, 1), [1, 2])
-#         assert_equal(eval([1, 2, 3], scanOverNeutral, plus, 1), [1, 2, 4, 7])
-#         assert_equal(eval([1, 2, 3], scanOverNeutral, plus, 1), [1, 2.0, 4.0, 7.0])
-#         assert_equal(eval([1, 2.0, 3], scanOverNeutral, plus, 1), [1, 2, 4.0, 7.0])
-#
-#     def test_scanConverging(self):
-#         assert_equal(eval([1, 2, 3], scanConverging, shape), [[1, 2, 3], [3], [1]])
-#         assert_equal(eval([1, 2, 3], scanConverging, shape), [[1, 2, 3], [3], [1]])
-#         assert_equal(eval([1, 2.0, 3], scanConverging, shape),[[1, 2.0, 3], [3], [1]])
-#
-#     def test_scanWhileOne(self):
-#         assert_equal(eval(0, scanWhileOne, atom, enclose), [0])
-#
-#     def test_scanIterating(self):
-#         assert_equal(eval([1, 2, 3], scanIterating, shape, 2), [[1, 2, 3], [3], [1]])
-#         with assert_raises(Exception):
-#             (eval([1, 2, 3], scanIterating, shape, -2))
-#         with assert_raises(Exception):
-#             (eval([1, 2, 3], scanIterating, shape, 1.0))
-#
-#         assert_equal(eval([1, 2, 3], scanIterating, shape, 2), [[1, 2, 3], [3], [1]])
-#         with assert_raises(Exception):
-#             (eval([1, 2, 3], scanIterating, shape, -2))
-#         with assert_raises(Exception):
-#             (eval([1, 2, 3], scanIterating, shape, 1.0))
-#
-#         assert_equal(eval([1, 2.0, 3], scanIterating, shape, 2), [[1, 2.0, 3], [3], [1]])
-#         with assert_raises(Exception):
-#             (eval([1, 2.0, 3], scanIterating, shape, -2))
-#         with assert_raises(Exception):
-#             (eval([1, 2.0, 3], scanIterating, shape, 1.0))
-#
-#     def test_apply(self):
-#         assert_equal(eval(1, applyMonad, negate), -1)
-#         assert_equal(eval(1, applyDyad, plus, 1), 2)
-#         assert_equal(eval(1, applyMonad, F(i, negate)), -1)
-#         assert_equal(eval(1, applyMonad, F(i, plus, 1)), 2)
-#         assert_equal(eval((1, plus, 1), applyMonad, negate), -2)
-#         assert_equal(eval((1, plus, 1), applyMonad, (i, plus, 1)), 3)
+    def test_eachPair(self):
+        assert_equal(eval(1, eachPair, plus), 1)
+        assert_equal(eval(1.0, eachPair, plus), 1.0)
+        assert_equal(eval([4, 5, 6], eachPair, plus), [9, 11])
+        assert_equal(eval([4.0, 5.0, 6.0], eachPair, plus), [9.0, 11.0])
+        assert_equal(eval([4, 5.0, 6], eachPair, plus), [9.0, 11.0])
+
+    def test_over(self):
+        assert_equal(eval(4, over, plus), 4)
+        assert_equal(eval(4, over, plus), 4.0)
+
+        assert_equal(eval([], over, plus), [])
+        assert_equal(eval([4], over, plus), 4)
+        assert_equal(eval([4, 5, 6], over, plus), 15)
+
+        assert_equal(eval([4.0], over, plus), 4.0)
+        assert_equal(eval([4.0, 5.0, 6.0], over, plus), 15.0)
+
+        assert_equal(eval([4, 5.0, 6], over, plus), 15)
+
+    def test_scanConverging(self):
+        assert_equal(eval(1, scanConverging, shape), [1, 0])
+        assert_equal(eval(1.0, scanConverging, shape), [1.0, 0])
+        assert_equal(eval([1, 2, 3], scanConverging, shape), [[1, 2, 3], [3], [1]])
+        assert_equal(eval([1.0, 2.0, 3.0], scanConverging, shape), [[1.0, 2.0, 3.0], [3], [1]])
+        assert_equal(eval([1, 2.0, 3], scanConverging, shape),[[1, 2.0, 3], [3], [1]])
+
+    def test_scanOver(self):
+        assert_equal(eval(1, scanOver, shape), [1])
+        assert_equal(eval(1.0, scanOver, shape), [1])
+
+        assert_equal(eval([], scanOver, plus), [])
+        assert_equal(eval([1, 2, 3], scanOver, plus), [1, 3, 6])
+
+        assert_equal(eval([1.0, 2.0, 3.0], scanOver, plus), [1.0, 3.0, 6.0])
+
+        assert_equal(eval([1, 2.0, 3], scanOver, plus), [1, 3.0, 6.0])
+
+    def test_each2(self):
+        assert_equal(eval(1, each2, plus, 1), 2)
+        assert_equal(eval(1, each2, plus, 1.0), 2.0)
+        assert_equal(eval(1.0, each2, plus, 1.0), 2.0)
+        assert_equal(eval(1.0, each2, plus, 1), 2.0)
+
+        assert_equal(eval([1, 2, 3], each2, plus, 4), [5, 6, 7])
+        assert_equal(eval([1, 2, 3], each2, plus, 4.0), [5.0, 6.0, 7.0])
+        assert_equal(eval([1, 2, 3], each2, plus, [4, 5, 6]), [5, 7, 9])
+        assert_equal(eval([1, 2, 3], each2, plus, [4.0, 5.0, 6.0]), [5.0, 7.0, 9.0])
+        assert_equal(eval([1, 2, 3], each2, plus, [4, 5.0, 6]), [5, 7.0, 9])
+
+        assert_equal(eval([1.0, 2.0, 3.0], each2, plus, 4), [5, 6, 7])
+        assert_equal(eval([1.0, 2.0, 3.0], each2, plus, 4.0), [5.0, 6.0, 7.0])
+        assert_equal(eval([1.0, 2.0, 3.0], each2, plus, [4, 5, 6]), [5, 7.0, 9])
+        assert_equal(eval([1.0, 2.0, 3.0], each2, plus, [4.0, 5.0, 6.0]), [5, 7.0, 9])
+        assert_equal(eval([1.0, 2.0, 3.0], each2, plus, [4, 5.0, 6]), [5, 7.0, 9])
+
+        assert_equal(eval([1, 2.0, 3], each2, plus, 4), [5, 6, 7])
+        assert_equal(eval([1, 2.0, 3], each2, plus, 4.0), [5.0, 6.0, 7.0])
+        assert_equal(eval([1, 2.0, 3], each2, plus, [4, 5, 6]), [5, 7.0, 9])
+        assert_equal(eval([1, 2.0, 3], each2, plus, [4.0, 5.0, 6.0]), [5, 7.0, 9])
+        assert_equal(eval([1, 2.0, 3], each2, plus, [4, 5.0, 6]), [5, 7.0, 9])
+
+    def test_eachLeft(self):
+        assert_equal(eval(1, eachLeft, plus, 4), 5)
+        assert_equal(eval(1, eachLeft, plus, 1.0), 2.0)
+        assert_equal(eval(1, eachLeft, plus, [4, 5, 6]), [5, 6, 7])
+        assert_equal(eval(1, eachLeft, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1, eachLeft, plus, [4, 5.0, 6]), [5, 6.0, 7])
+
+        assert_equal(eval(1.0, eachLeft, plus, 4), 5.0)
+        assert_equal(eval(1.0, eachLeft, plus, 4.0), 5.0)
+        assert_equal(eval(1.0, eachLeft, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1.0, eachLeft, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1.0, eachLeft, plus, [4, 5.0, 6]), [5.0, 6.0, 7.0])
+
+        assert_equal(eval([1, 2, 3], eachLeft, plus, 4), [5, 6, 7])
+        assert_equal(eval([1, 2, 3], eachLeft, plus, 4.0), [5, 6, 7])
+        assert_equal(eval([1, 2, 3], eachLeft, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+        assert_equal(eval([1, 2, 3], eachLeft, plus, [4.0, 5.0, 6.0]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+        assert_equal(eval([1, 2, 3], eachLeft, plus, [4, 5.0, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+
+        assert_equal(eval([1.0, 2.0, 3.0], eachLeft, plus, 4), [5, 6, 7])
+        assert_equal(eval([1.0, 2.0, 3.0], eachLeft, plus, 4.0), [5, 6, 7])
+        assert_equal(eval([1.0, 2.0, 3.0], eachLeft, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+        assert_equal(eval([1.0, 2.0, 3.0], eachLeft, plus, [4.0, 5.0, 6.0]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+        assert_equal(eval([1.0, 2.0, 3.0], eachLeft, plus, [4, 5.0, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+
+        assert_equal(eval([1, 2.0, 3], eachLeft, plus, 4), [5, 6.0, 7])
+        assert_equal(eval([1, 2.0, 3], eachLeft, plus, 4.0), [5.0, 6.0, 7.0])
+        assert_equal(eval([1, 2.0, 3], eachLeft, plus, [4, 5, 6]), [[5, 6.0, 7], [6, 7.0, 8], [7, 8.0, 9]])
+        assert_equal(eval([1, 2.0, 3], eachLeft, plus, [4.0, 5.0, 6.0]), [[5, 6.0, 7], [6, 7.0, 8], [7, 8.0, 9]])
+        assert_equal(eval([1, 2.0, 3], eachLeft, plus, [4, 5.0, 6]), [[5, 6.0, 7], [6, 7.0, 8], [7, 8.0, 9]])
+
+    def test_eachRight(self):
+        assert_equal(eval(1, eachRight, plus, 4), 5)
+        assert_equal(eval(1, eachRight, plus, 4.0), 5.0)
+        assert_equal(eval(1, eachRight, plus, [4, 5, 6]), [5, 6, 7])
+        assert_equal(eval(1, eachRight, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1, eachRight, plus, [4, 5.0, 6]), [5, 6.0, 7])
+
+        assert_equal(eval(1.0, eachRight, plus, 4), 5.0)
+        assert_equal(eval(1.0, eachRight, plus, 4.0), 5.0)
+        assert_equal(eval(1.0, eachRight, plus, [4, 5, 6]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1.0, eachRight, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1.0, eachRight, plus, [4, 5.0, 6]), [5.0, 6.0, 7.0])
+
+        assert_equal(eval([1, 2, 3], eachRight, plus, 4), [5, 6, 7])
+        assert_equal(eval([1, 2, 3], eachRight, plus, 4.0), [5, 6, 7])
+        assert_equal(eval([1, 2, 3], eachRight, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+        assert_equal(eval([1, 2, 3], eachRight, plus, [4.0, 5.0, 6.0]), [[5.0, 6.0, 7.0], [6.0, 7.0, 8.0], [7.0, 8.0, 9.0]])
+        assert_equal(eval([1, 2, 3], eachRight, plus, [4, 5.0, 6]), [[5, 6, 7], [6.0, 7.0, 8.0], [7, 8, 9]])
+
+        assert_equal(eval([1.0, 2.0, 3.0], eachRight, plus, 4), [5, 6, 7])
+        assert_equal(eval([1.0, 2.0, 3.0], eachRight, plus, 4.0), [5.0, 6.0, 7.0])
+        assert_equal(eval([1.0, 2.0, 3.0], eachRight, plus, [4, 5, 6]), [[5, 6, 7], [6, 7, 8], [7, 8, 9]])
+        assert_equal(eval([1.0, 2.0, 3.0], eachRight, plus, [4.0, 5.0, 6.0]), [[5.0, 6.0, 7.0], [6.0, 7.0, 8.0], [7.0, 8.0, 9.0]])
+        assert_equal(eval([1.0, 2.0, 3.0], eachRight, plus, [4, 5.0, 6]), [[5, 6, 7], [6.0, 7.0, 8.0], [7, 8, 9]])
+
+        assert_equal(eval([1, 2.0, 3], eachRight, plus, 4), [5, 6.0, 7])
+        assert_equal(eval([1, 2.0, 3], eachRight, plus, 4.0), [5.0, 6.0, 7.0])
+        assert_equal(eval([1, 2.0, 3], eachRight, plus, [4, 5, 6]), [[5, 6.0, 7], [6, 7.0, 8], [7, 8.0, 9]])
+        assert_equal(eval([1, 2.0, 3], eachRight, plus, [4.0, 5.0, 6.0]), [[5.0, 6.0, 7.0], [6.0, 7.0, 8.0], [7.0, 8.0, 9.0]])
+        assert_equal(eval([1, 2.0, 3], eachRight, plus, [4, 5.0, 6]), [[5, 6.0, 7], [6.0, 7.0, 8.0], [7, 8.0, 9]])
+
+    def test_overNeutral(self):
+        assert_equal(eval(1, overNeutral, plus, 1), 2)
+        assert_equal(eval(1, overNeutral, plus, 1.0), 2.0)
+        assert_equal(eval(1, overNeutral, plus, [4, 5, 6]), [5, 6, 7])
+        assert_equal(eval(1, overNeutral, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1, overNeutral, plus, [4, 5.0, 6]), [5, 6.0, 7])
+
+        assert_equal(eval(1.0, overNeutral, plus, 1), 2.0)
+        assert_equal(eval(1.0, overNeutral, plus, 1.0), 2.0)
+        assert_equal(eval(1.0, overNeutral, plus, [4, 5, 6]), [5, 6, 7])
+        assert_equal(eval(1.0, overNeutral, plus, [4.0, 5.0, 6.0]), [5.0, 6.0, 7.0])
+        assert_equal(eval(1.0, overNeutral, plus, [4, 5.0, 6]), [5.0, 6.0, 7.0])
+
+        assert_equal(eval([], overNeutral, plus, 1), 1)
+        assert_equal(eval([1, 2], overNeutral, plus, 1), 4)
+        assert_equal(eval([1, 2], overNeutral, plus, 1.0), 4.0)
+        assert_equal(eval([1, 2], overNeutral, plus, [4, 5, 6]), [7, 8, 9])
+        assert_equal(eval([1, 2], overNeutral, plus, [4.0, 5.0, 6.0]), [7.0, 8.0, 9.0])
+        assert_equal(eval([1, 2], overNeutral, plus, [4, 5.0, 6]), [7, 8.0, 9])
+
+        assert_equal(eval([1.0, 2.0], overNeutral, plus, 1), 4)
+        assert_equal(eval([1.0, 2.0], overNeutral, plus, 1.0), 4.0)
+        assert_equal(eval([1.0, 2.0], overNeutral, plus, [4, 5, 6]), [7, 8, 9])
+        assert_equal(eval([1.0, 2.0], overNeutral, plus, [4.0, 5.0, 6.0]), [7.0, 8.0, 9.0])
+        assert_equal(eval([1.0, 2.0], overNeutral, plus, [4, 5.0, 6]), [7, 8.0, 9])
+
+        assert_equal(eval([1, 2.0], overNeutral, plus, 1), 4.0)
+        assert_equal(eval([1, 2.0], overNeutral, plus, 4.0), 7.0)
+        assert_equal(eval([1, 2.0], overNeutral, plus, [4, 5, 6]), [7, 8, 9])
+        assert_equal(eval([1, 2.0], overNeutral, plus, [4.0, 5.0, 6.0]), [7.0, 8.0, 9.0])
+        assert_equal(eval([1, 2.0], overNeutral, plus, [4, 5.0, 6]), [7, 8.0, 9])
+
+    def test_iterate(self):
+        assert_equal(eval(1, iterate, negate, 2), 1)
+        assert_equal(eval(1, iterate, negate, 3), -1)
+
+        assert_equal(eval(1.0, iterate, negate, 2), 1.0)
+        assert_equal(eval(1.0, iterate, negate, 3), -1.0)
+
+        assert_equal(eval([1, 2, 3], iterate, shape, 2), [1])
+        assert_equal(eval([1.0, 2.0, 3.0], iterate, shape, 2), [1])
+        assert_equal(eval([1, 2.0, 3], iterate, shape, 2), [1])
+
+    def test_scanIterating(self):
+        assert_equal(eval(1, scanIterating, negate, 2), [1, -1, 1])
+        assert_equal(eval(1, scanIterating, negate, 3), [1, -1, 1, -1])
+
+        assert_equal(eval(1.0, scanIterating, negate, 2), [1.0, -1.0, 1.0])
+        assert_equal(eval(1.0, scanIterating, negate, 3), [1.0, -1.0, 1.0, -1.0])
+
+        assert_equal(eval([1, 2, 3], scanIterating, shape, 2), [[1, 2, 3], [3], [1]])
+        assert_equal(eval([1.0, 2.0, 3.0], scanIterating, shape, 2), [[1.0, 2.0, 3.0], [3], [1]])
+        assert_equal(eval([1, 2.0, 3], scanIterating, shape, 2), [[1, 2.0, 3], [3], [1]])
+
+    def test_scanOverNeutral(self):
+        assert_equal(eval(1, scanOverNeutral, plus, 1), [1, 2])
+
+        assert_equal(eval(1.0, scanOverNeutral, plus, 1), [1, 2])
+
+        assert_equal(eval([1, 2, 3], scanOverNeutral, plus, 1), [1, 2, 4, 7])
+        assert_equal(eval([1.0, 2.0, 3.0], scanOverNeutral, plus, 1), [1, 2.0, 4.0, 7.0])
+        assert_equal(eval([1, 2.0, 3], scanOverNeutral, plus, 1), [1, 2, 4.0, 7.0])
+
+    def test_scanWhileOne(self):
+        assert_equal(eval(0, scanWhileOne, atom, enclose), [0])
+
+        assert_equal(eval(0.0, scanWhileOne, atom, enclose), [0.0])
+
+        assert_equal(eval([], scanWhileOne, atom, enclose), [[]])
+        assert_equal(eval([1], scanWhileOne, atom, enclose), [])
+
+        assert_equal(eval([1.0], scanWhileOne, atom, enclose), [])
+
+        assert_equal(eval([1, 2.0], scanWhileOne, atom, enclose), [])
+
+    def test_whileOne(self):
+        assert_equal(eval(0, whileOne, atom, enclose), [0])
+
+        assert_equal(eval(0.0, whileOne, atom, enclose), [0.0])
+
+        assert_equal(eval([], whileOne, atom, enclose), [[]])
+        assert_equal(eval([1], whileOne, atom, enclose), [1])
+
+        assert_equal(eval([1.0], whileOne, atom, enclose), [1.0])
+
+        assert_equal(eval([1, 2.0], whileOne, atom, enclose), [1, 2.0])
 
 if __name__ == "__main__":
     # Run tests when executed

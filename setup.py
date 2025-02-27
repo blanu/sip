@@ -19,7 +19,7 @@ setup(
     install_requires=[
         "pyserial>=3.5",
         "testify>=0.11.3",
-        "iota-python>=0.0.15",
+        "iota-python>=0.0.61",
         "numpy>=2.2.2",
     ],
 )
