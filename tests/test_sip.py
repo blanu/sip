@@ -651,7 +651,20 @@ class EqualTests(TestCase):
         assert_equal(eval("abc", equal, "abc"), 1)
         assert_equal(eval("abc", equal, "abd"), 0)
 
-# FIXME - expand
+class ExpandTests(TestCase):
+    #   [1 2 3 4 5] = [0 2 0 4 5] -->  [0 1 0 1 1]
+    # & [1 2 3 4 5] = [0 2 0 4 5] -->  [1 3 4]
+    #
+    # Examples:           & 0 -->   []
+    #                     & 5 -->   [0 0 0 0 0]
+    #               & [1 2 3] -->   [0 1 1 2 2 2]
+    #           & [0 1 0 1 0] -->   [1 3]
+    def test_expand_ref(self):
+        assert_equal(eval(0, expand), [])
+        assert_equal(eval(5, expand), [0, 0, 0, 0, 0])
+        assert_equal(eval([1, 2, 3], expand), [0, 1, 1, 2, 2, 2])
+        assert_equal(eval([0, 1, 0, 1, 0], expand), [1, 3])
+
 # FIXME - form
 # FIXME - format2
 
