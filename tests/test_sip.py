@@ -541,7 +541,6 @@ class DropTests(TestCase):
         assert_equal(eval([0, 1.0, 0, 2.0], drop, 100), [])
         assert_equal(eval([0, 1.0, 0, 2.0], drop, -100), [])
 
-# FIXME equal for characters, strings
 class EqualTests(TestCase):
     def test_equal_integer(self):
         assert_equal(eval(1, equal, 1), 1)
@@ -641,6 +640,16 @@ class EqualTests(TestCase):
             eval([1, 2.0], equal, [2.0, 1.0])
         with assert_raises(Exception):
             eval([1, 2.0], equal, [2.0, 1])
+
+    def test_equal_character(self):
+        assert_equal(eval(C('a'), equal, C('a')), 1)
+        assert_equal(eval(C('a'), equal, C('b')), 0)
+
+    def test_equal_string(self):
+        assert_equal(eval("a", equal, "a"), 1)
+        assert_equal(eval("a", equal, "b"), 0)
+        assert_equal(eval("abc", equal, "abc"), 1)
+        assert_equal(eval("abc", equal, "abd"), 0)
 
 # FIXME - expand
 # FIXME - form
