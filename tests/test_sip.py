@@ -245,7 +245,12 @@ class GradeUpTests(TestCase):
     def test_gradeUp_string(self):
         assert_equal(eval("abac", gradeUp), [4, 2, 1, 3])
 
-# FIXME - group
+class GroupTests(TestCase):
+    def test_group_integer(self):
+        assert_equal(eval([1, 2, 3, 4], group), [[1], [2], [3], [4]])
+        assert_equal(eval([1.0, 2.0, 3.0, 4.0], group), [[1], [2], [3], [4]])
+        assert_equal(eval([1.0, 2, 3.0, 4], group), [[1], [2], [3], [4]])
+        assert_equal(eval("hello foo", group), [[1], [2], [3, 4], [5, 8, 9], [6], [7]])
 
 class NegateTests(TestCase):
     def test_negate_integer(self):
