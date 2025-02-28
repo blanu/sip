@@ -136,6 +136,9 @@ class AtomTests(TestCase):
         assert_equal(eval("", atom), true)
         assert_equal(eval("abc", atom), false)
 
+    def test_atom_dictionary(self):
+        assert_equal(eval({1: 2}, atom), true)
+
 class CharTests(TestCase):
     def test_char_integer(self):
         assert_equal(eval(1, char), '\x01')
@@ -177,17 +180,34 @@ class EncloseTests(TestCase):
     def test_enclose_string(self):
         assert_equal(eval("a", enclose), ["a"])
 
+    def test_enclose_dictionaru(self):
+        assert_equal(eval({1: 2}, enclose), [{1: 2}])
+
 class NotTests(TestCase):
     def test_not_integer(self):
-        assert_equal(eval(5, inot), -4)
+        assert_equal(eval(0, inot), 1)
+        assert_equal(eval(5, inot), 0)
 
     def test_not_real(self):
-        assert_equal(eval(5, inot), -4)
+        assert_equal(eval(0.0, inot), 1)
+        assert_equal(eval(5.0, inot), 0)
 
     def test_not_list(self):
-        assert_equal(eval([0, 1, 2], inot), [1, 0, -1])
-        assert_equal(eval([0.0, 1.0, 2.0], inot), [1, 0, -1])
-        assert_equal(eval([0, 1.0, 2], inot), [1, 0.0, -1])
+        assert_equal(eval([], inot), 1)
+        assert_equal(eval([0, 1, 2], inot), [1, 0, 0])
+        assert_equal(eval([0.0, 1.0, 2.0], inot), [1, 0, 0])
+        assert_equal(eval([0, 1.0, 2], inot), [1, 0, 0])
+
+    def test_not_character(self):
+        assert_equal(eval(C('a'), inot), 0)
+
+    def test_not_string(self):
+        assert_equal(eval("", inot), 1)
+        assert_equal(eval("a", inot), 0)
+
+    def test_not_dictionary(self):
+        assert_equal(eval({}, inot), 0)
+        assert_equal(eval({1: 2}, inot), 0)
 
 class EnumerateTests(TestCase):
     def test_enumerate_integer(self):
@@ -211,6 +231,9 @@ class FirstTests(TestCase):
 
     def test_first_string(self):
         assert_equal(eval("abc", first), 'a')
+
+    def test_first_dictionary(self):
+        assert_equal(eval({1: 2}, first), {1: 2})
 
 class FloorTests(TestCase):
     def test_floor_integer(self):
@@ -1340,6 +1363,16 @@ class RemainderTests(TestCase):
         # assert_equal(eval([[1, 2, 3]], reshape, [2]), [[1, 2, 3], [1, 2, 3]])
 
 class RotateTests(TestCase):
+    def test_rotate_integer(self):
+        assert_equal(eval(1, rotate, 0), 1)
+        assert_equal(eval(1, rotate, 1), 1)
+        assert_equal(eval(1, rotate, -1), 1)
+
+    def test_rotate_real(self):
+        assert_equal(eval(1.0, rotate, 0), 1)
+        assert_equal(eval(1.0, rotate, 1), 1)
+        assert_equal(eval(1.0, rotate, -1), 1)
+
     def test_rotate_list(self):
         assert_equal(eval([], rotate, 1), [])
 
@@ -1370,6 +1403,21 @@ class RotateTests(TestCase):
         assert_equal(eval([0, 1, [1, 2, 3]], rotate, 4), [[1, 2, 3], 0, 1])
         assert_equal(eval([0, 1, [1, 2, 3]], rotate, -1), [1.0, [1, 2, 3], 0])
         assert_equal(eval([0, 1, [1, 2, 3]], rotate, -4), [1.0, [1, 2, 3], 0])
+
+    def test_rotate_character(self):
+        assert_equal(eval(C('a'), rotate, 0), 'a')
+        assert_equal(eval(C('a'), rotate, 1), 'a')
+        assert_equal(eval(C('a'), rotate, -1), 'a')
+
+    def test_rotate_string(self):
+        assert_equal(eval("abc", rotate, 0), "abc")
+        assert_equal(eval("abc", rotate, 1), "cab")
+        assert_equal(eval("abc", rotate, -1), "bca")
+
+    def test_rotate_dictionary(self):
+        assert_equal(eval({1: 2}, rotate, 0), {1: 2})
+        assert_equal(eval({1: 2}, rotate, 1), {1: 2})
+        assert_equal(eval({1: 2}, rotate, -1), {1: 2})
 
     def test_rotate_ref(self):
         #Examples:           1:+[1 2 3 4 5]     -->  [5 1 2 3 4]
