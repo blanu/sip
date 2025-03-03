@@ -248,7 +248,36 @@ class FloorTests(TestCase):
         assert_equal(eval([0.1, 1.5, 2.9], floor), [0, 1, 2])
         assert_equal(eval([1, 2.0, 3, 4, 5], floor), [1, 2, 3, 4, 5])
 
-# FIXME - format
+class FormatTests(TestCase):
+    def test_format_integer(self):
+        assert_equal(eval(0, iformat), "0")
+        assert_equal(eval(1, iformat), "1")
+        assert_equal(eval(-1, iformat), "-1")
+        assert_equal(eval(10, iformat), "10")
+        assert_equal(eval(-10, iformat), "-10")
+        assert_equal(eval(38473, iformat), "38473")
+        assert_equal(eval(-38473, iformat), "-38473")
+
+    def test_format_float(self):
+        assert_equal(eval(0.0, iformat), "0.0")
+        assert_equal(eval(1.0, iformat), "1.0")
+        assert_equal(eval(-1.0, iformat), "-1.0")
+        assert_equal(eval(10.0, iformat), "10.0")
+        assert_equal(eval(-10.0, iformat), "-10.0")
+        assert_equal(eval(38473.0, iformat), "38473.0")
+        assert_equal(eval(-38473.0, iformat), "-38473.0")
+
+    def test_format_list(self):
+        assert_equal(eval([], iformat), "[]")
+        assert_equal(eval([0], iformat), ["0"])
+        assert_equal(eval([0.0], iformat), ["0.0"])
+        assert_equal(eval([0, 1.0], iformat), ["0", "1.0"])
+
+    def test_format_character(self):
+        assert_equal(eval(C('a'), iformat), "a")
+
+    def test_format_string(self):
+        assert_equal(eval("abc", iformat), "abc")
 
 class GradeDownTests(TestCase):
     def test_gradeDown_word_array(self):
@@ -688,8 +717,201 @@ class ExpandTests(TestCase):
         assert_equal(eval([1, 2, 3], expand), [0, 1, 1, 2, 2, 2])
         assert_equal(eval([0, 1, 0, 1, 0], expand), [1, 3])
 
-# FIXME - form
-# FIXME - format2
+class FormTests(TestCase):
+    def test_form_ref(self):
+        # Examples:     1:$"-123"  -->  -123
+        #             1.0:$"1.23"  -->  1.23
+        #                0c0:$"x"  -->  0cx
+        #            "":$"string"  -->  "string"
+        #            :x:$"symbol"  -->  :symbol
+        #           :x:$":symbol"  -->  :symbol
+
+        assert_equal(eval("-123", form, 1), -123)
+        assert_equal(int(eval("1.23", form, 1.0) * 100), 123) # Straightforward comparison doesn't work due to floating point noise
+        assert_equal(eval("x", form, C('x')), 'x')
+        assert_equal(eval("string", form, ""), "string")
+        # FIXME - symbols
+
+    def test_form_integer(self):
+        assert_equal(eval("0", form, 0), 0)
+        assert_equal(eval("1", form, 0), 1)
+        assert_equal(eval("-1", form, 0), -1)
+
+    def test_form_real(self):
+        assert_equal(eval("0", form, 0.0), 0.0)
+        assert_equal(eval("1", form, 0.0), 1.0)
+        assert_equal(eval("-1", form, 0.0), -1.0)
+        assert_equal(eval("0.0", form, 0.0), 0.0)
+        assert_equal(eval("1.0", form, 0.0), 1.0)
+        assert_equal(eval("-1.0", form, 0.0), -1.0)
+
+    def test_form_list(self):
+        assert_equal(eval("0", form, [0]), [0])
+        assert_equal(eval("0", form, [0.0]), [0.0])
+        assert_equal(eval("0", form, [0, 0.0]), [0, 0.0])
+
+    def test_form_character(self):
+        assert_equal(eval("a", form, C('a')), 'a')
+
+        with assert_raises(Exception):
+            eval("ab", form, C('a'))
+
+    def test_form_string(self):
+        assert_equal(eval("a", form, ""), "a")
+        assert_equal(eval("ab", form, ""), "ab")
+
+class Format2Tests(TestCase):
+    def test_format2_integer(self):
+        assert_equal(eval(0, format2, 0), "0")
+        assert_equal(eval(0, format2, 1), "0")
+        assert_equal(eval(0, format2, -1), "0")
+        assert_equal(eval(0, format2, 2), "0 ")
+        assert_equal(eval(0, format2, -2), " 0")
+        assert_equal(eval(0, format2, 3), "0  ")
+        assert_equal(eval(0, format2, -3), "  0")
+
+    def test_format2_float(self):
+        assert_equal(eval(0.0, format2, 0), "0.0")
+        assert_equal(eval(0.0, format2, 1), "0.0")
+        assert_equal(eval(0.0, format2, -1), "0.0")
+        assert_equal(eval(0.0, format2, 2), "0.0")
+        assert_equal(eval(0.0, format2, -2), "0.0")
+        assert_equal(eval(0.0, format2, 3), "0.0")
+        assert_equal(eval(0.0, format2, -3), "0.0")
+        assert_equal(eval(0.0, format2, 4), "0.0 ")
+        assert_equal(eval(0.0, format2, -4), " 0.0")
+        assert_equal(eval(0.0, format2, 5), "0.0  ")
+        assert_equal(eval(0.0, format2, -5), "  0.0")
+
+    def test_format2_list(self):
+#         # FIXME - should be :undefined
+#         # assert_equal(eval([], format2, 0), "[]")
+#         # assert_equal(eval([], format2, 1), "[]")
+#         # assert_equal(eval([], format2, -1), "[]")
+#         # assert_equal(eval([], format2, 2), "[]")
+#         # assert_equal(eval([], format2, -2), "[]")
+#         # assert_equal(eval([], format2, 3), "[] ")
+#         # assert_equal(eval([], format2, -3), " []")
+
+        assert_equal(eval([0], format2, 0), ["0"])
+        assert_equal(eval([0], format2, 1), ["0"])
+        assert_equal(eval([0], format2, -1), ["0"])
+        assert_equal(eval([0], format2, 2), ["0 "])
+        assert_equal(eval([0], format2, -2), [" 0"])
+        assert_equal(eval([0], format2, 3), ["0  "])
+        assert_equal(eval([0], format2, -3), ["  0"])
+        assert_equal(eval([0], format2, 0.0), ["0"])
+        assert_equal(eval([0], format2, 1.0), ["0"])
+        assert_equal(eval([0], format2, -1.0), ["0"])
+        assert_equal(eval([0], format2, 2.0), ["0 "])
+        assert_equal(eval([0], format2, -2.0), [" 0"])
+        assert_equal(eval([0], format2, 3.0), ["0  "])
+        assert_equal(eval([0], format2, -3.0), ["  0"])
+        assert_equal(eval([0], format2, 0.5), ["0"])
+        assert_equal(eval([0], format2, 1.5), ["0"])
+        assert_equal(eval([0], format2, -1.5), ["0"])
+        assert_equal(eval([0], format2, 2.5), ["0 "])
+        assert_equal(eval([0], format2, -2.5), [" 0"])
+        assert_equal(eval([0], format2, 3.5), ["0  "])
+        assert_equal(eval([0], format2, -3.5), ["  0"])
+
+        assert_equal(eval([0.0], format2, 0), ["0.0"])
+        assert_equal(eval([0.0], format2, 1), ["0.0"])
+        assert_equal(eval([0.0], format2, -1), ["0.0"])
+        assert_equal(eval([0.0], format2, 2), ["0.0"])
+        assert_equal(eval([0.0], format2, -2), ["0.0"])
+        assert_equal(eval([0.0], format2, 3), ["0.0"])
+        assert_equal(eval([0.0], format2, -3), ["0.0"])
+        assert_equal(eval([0.0], format2, 4), ["0.0 "])
+        assert_equal(eval([0.0], format2, -4), [" 0.0"])
+        assert_equal(eval([0.0], format2, 5), ["0.0  "])
+        assert_equal(eval([0.0], format2, -5), ["  0.0"])
+        assert_equal(eval([0.0], format2, 0.0), ["0.0"])
+        assert_equal(eval([0.0], format2, 1.0), ["0.0"])
+        assert_equal(eval([0.0], format2, -1.0), ["0.0"])
+        assert_equal(eval([0.0], format2, 2.0), ["0.0"])
+        assert_equal(eval([0.0], format2, -2.0), ["0.0"])
+        assert_equal(eval([0.0], format2, 3.0), ["0.0"])
+        assert_equal(eval([0.0], format2, -3.0), ["0.0"])
+        assert_equal(eval([0.0], format2, 4.0), ["0.0 "])
+        assert_equal(eval([0.0], format2, -4.0), [" 0.0"])
+        assert_equal(eval([0.0], format2, 5.0), ["0.0  "])
+        assert_equal(eval([0.0], format2, -5.0), ["  0.0"])
+        assert_equal(eval([0.0], format2, 0.5), ["0.00000"]) # This crashes Klong
+        assert_equal(eval([0.0], format2, -0.5), ["0.00000"]) # This crashes Klong
+        assert_equal(eval([0.0], format2, 1.5), ["0.00000"])
+        assert_equal(eval([0.0], format2, -1.5), ["0.00000"])
+        assert_equal(eval([0.0], format2, 2.5), [" 0.00000"])
+        assert_equal(eval([0.0], format2, -2.5), [" 0.00000"])
+        assert_equal(eval([0.0], format2, 3.5), ["  0.00000"])
+        assert_equal(eval([0.0], format2, -3.5), ["  0.00000"])
+
+        assert_equal(eval([0.0, 1], format2, 0), ["0.0", "1"])
+        assert_equal(eval([0.0, 1], format2, 1), ["0.0", "1"])
+        assert_equal(eval([0.0, 1], format2, -1), ["0.0", "1"])
+        assert_equal(eval([0.0, 1], format2, 2), ["0.0", "1 "])
+        assert_equal(eval([0.0, 1], format2, -2), ["0.0", " 1"])
+        assert_equal(eval([0.0, 1], format2, 3), ["0.0", "1  "])
+        assert_equal(eval([0.0, 1], format2, -3), ["0.0", "  1"])
+        assert_equal(eval([0.0, 1], format2, 4), ["0.0 ", "1   "])
+        assert_equal(eval([0.0, 1], format2, -4), [" 0.0", "   1"])
+        assert_equal(eval([0.0, 1], format2, 5), ["0.0  ", "1    "])
+        assert_equal(eval([0.0, 1], format2, -5), ["  0.0", "    1"])
+        assert_equal(eval([0.0, 1], format2, 0.0), ["0.0", "1"])
+        assert_equal(eval([0.0, 1], format2, 1.0), ["0.0", "1"])
+        assert_equal(eval([0.0, 1], format2, -1.0), ["0.0", "1"])
+        assert_equal(eval([0.0, 1], format2, 2.0), ["0.0", "1 "])
+        assert_equal(eval([0.0, 1], format2, -2.0), ["0.0", " 1"])
+        assert_equal(eval([0.0, 1], format2, 3.0), ["0.0", "1  "])
+        assert_equal(eval([0.0, 1], format2, -3.0), ["0.0", "  1"])
+        assert_equal(eval([0.0, 1], format2, 4.0), ["0.0 ", "1   "])
+        assert_equal(eval([0.0, 1], format2, -4.0), [" 0.0", "   1"])
+        assert_equal(eval([0.0, 1], format2, 5.0), ["0.0  ", "1    "])
+        assert_equal(eval([0.0, 1], format2, -5.0), ["  0.0", "    1"])
+        assert_equal(eval([0.0, 1], format2, 0.5), ["0.00000", "1"])
+        assert_equal(eval([0.0, 1], format2, -0.5), ["0.00000", "1"])
+        assert_equal(eval([0.0, 1], format2, 1.5), ["0.00000", "1"])
+        assert_equal(eval([0.0, 1], format2, -1.5), ["0.00000", "1"])
+        assert_equal(eval([0.0, 1], format2, 2.5), [" 0.00000", "1 "])
+        assert_equal(eval([0.0, 1], format2, -2.5), [" 0.00000", " 1"])
+        assert_equal(eval([0.0, 1], format2, 3.5), ["  0.00000", "1  "])
+        assert_equal(eval([0.0, 1], format2, -3.5), ["  0.00000", "  1"])
+
+    def test_format2_character(self):
+        assert_equal(eval(C('a'), format2, 0), "a")
+        assert_equal(eval(C('a'), format2, 1), "a")
+        assert_equal(eval(C('a'), format2, -1), "a")
+        assert_equal(eval(C('a'), format2, 2), "a ")
+        assert_equal(eval(C('a'), format2, -2), " a")
+        assert_equal(eval(C('a'), format2, 0.0), "a")
+        assert_equal(eval(C('a'), format2, 1.0), "a")
+        assert_equal(eval(C('a'), format2, -1.0), "a")
+        assert_equal(eval(C('a'), format2, 2.0), "a ")
+        assert_equal(eval(C('a'), format2, -2.0), " a")
+        assert_equal(eval(C('a'), format2, 2.5), "a ")
+        assert_equal(eval(C('a'), format2, -2.5), " a")
+
+    def test_format2_string(self):
+        assert_equal(eval("abc", format2, 0), "abc")
+        assert_equal(eval("abc", format2, 1), "abc")
+        assert_equal(eval("abc", format2, -1), "abc")
+        assert_equal(eval("abc", format2, 2), "abc")
+        assert_equal(eval("abc", format2, -2), "abc")
+        assert_equal(eval("abc", format2, 3), "abc")
+        assert_equal(eval("abc", format2, -3), "abc")
+        assert_equal(eval("abc", format2, 4), "abc ")
+        assert_equal(eval("abc", format2, -4), " abc")
+        assert_equal(eval("abc", format2, 0.0), "abc")
+        assert_equal(eval("abc", format2, 1.0), "abc")
+        assert_equal(eval("abc", format2, -1.0), "abc")
+        assert_equal(eval("abc", format2, 2.0), "abc")
+        assert_equal(eval("abc", format2, -2.0), "abc")
+        assert_equal(eval("abc", format2, 3.0), "abc")
+        assert_equal(eval("abc", format2, -3.0), "abc")
+        assert_equal(eval("abc", format2, 4.0), "abc ")
+        assert_equal(eval("abc", format2, -4.0), " abc")
+        assert_equal(eval("abc", format2, 4.5), "abc ")
+        assert_equal(eval("abc", format2, -4.5), " abc")
 
 class FindTests(TestCase):
     def test_find_list_integer(self):
