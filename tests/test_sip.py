@@ -984,6 +984,23 @@ class Format2Tests(TestCase):
         assert_equal(eval(QuotedSymbol("x"), format2, -4), "  :x")
 
 class FindTests(TestCase):
+    def test_find_ref(self):
+        # Examples: [1 2 3 1 2 1]?1  -->  [0 3 5] # we use a 1-based index, should be [1 4 6]
+        #                 [1 2 3]?4  -->  []
+        #               "hello"?0cl  -->  [2 3]   # [3 4]
+        #             "xyyyyz"?"yy"  -->  [1 2 3] # [2 3 4]
+        #                     ""?""  -->  [0]     # [1]
+        #               :{[1 []]}?1  -->  []
+        #                :{[1 2]}?3  -->  :undefined
+
+        assert_equal(eval([1, 2, 3, 1, 2, 1], find, 1), [1, 4, 6])
+        assert_equal(eval([1, 2, 3], find, 4), [])
+        assert_equal(eval("hello", find, C('l')), [3, 4])
+        assert_equal(eval("xyyyyz", find, "yy"), [2, 3, 4])
+        assert_equal(eval("", find, ""), [1])
+        assert_equal(eval({1: []}, find, 1), [])
+        assert_equal(eval({1: 2}, find, 3), ":undefined")
+
     def test_find_list_integer(self):
         assert_equal(eval([1, 2, 3], find, 2), [2])
         assert_equal(eval([1.0, 2.0, 3.0], find, 2), [2])
