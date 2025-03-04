@@ -434,6 +434,15 @@ class TransposeTests(TestCase):
         # assert_equal(eval([[1, 2.0], [3, 4.0]], transpose), [[1, 3], [2.0, 4.0]])
 
 class UndefinedTests(TestCase):
+    def test_undefined_ref(self):
+        # Examples:        :_1%0  -->  1
+        #           :_:{[1 2]}?3  -->  1
+        #               :_:valid  -->  0
+
+        assert_equal(eval(1, divide, 0, undefined), 1)
+        assert_equal(eval({1: 2}, find, 3, undefined), 1)
+        assert_equal(eval(QuotedSymbol(":valid"), undefined), 0)
+
     def test_undefined_integer(self):
         assert_equal(eval(0, undefined), 0)
 
@@ -996,14 +1005,15 @@ class FindTests(TestCase):
         assert_equal(eval([1.0, 2, 3.0], find, 4.0), [])
 
     def test_find_list_list(self):
-        assert_equal(eval([1, 2, 3], find, [2, 3]), [2])
-        assert_equal(eval([1.0, 2.0, 3.0], find, [2, 3]), [2])
-        assert_equal(eval([1, 2.0, 3], find, [2, 3]), [2])
-        assert_equal(eval([1.0, 2, 3.0], find, [2, 3]), [2])
-        assert_equal(eval([1, 2, 3], find, [2, 4]), [])
-        assert_equal(eval([1.0, 2.0, 3.0], find, [2, 4]), [])
-        assert_equal(eval([1, 2.0, 3], find, [2, 4]), [])
-        assert_equal(eval([1.0, 2, 3.0], find, [2, 4]), [])
+        assert_equal(eval([1, 2, 3], find, [1, 2]), [])
+        assert_equal(eval([1, 2, 3], find, [1.0, 2.0]), [])
+        assert_equal(eval([1, 2, 3], find, [1.0, 2]), [])
+        assert_equal(eval([1.0, 2.0, 3.0], find, [2, 3]), [])
+        assert_equal(eval([1.0, 2.0, 3.0], find, [2.0, 3.0]), [])
+        assert_equal(eval([1.0, 2.0, 3.0], find, [2.0, 3]), [])
+        assert_equal(eval([[1, 2], 3], find, [1, 2]), [1])
+        assert_equal(eval([[1.0, 2.0], 3], find, [1.0, 2.0]), [1])
+        assert_equal(eval([[1.0, 2], 3], find, [1.0, 2]), [1])
 
     def test_find_string_character(self):
         assert_equal(eval("abc", find, C('b')), [2])
@@ -1012,6 +1022,39 @@ class FindTests(TestCase):
     def test_find_string_string(self):
         assert_equal(eval("abc", find, "bc"), [2])
         assert_equal(eval("abc", find, "bd"), [])
+
+    def test_find_dictionary(self):
+        assert_equal(eval({1: 2}, find, 1), 2)
+        assert_equal(eval({1: 2}, find, 2), ":undefined")
+
+        assert_equal(eval({1.0: 2.0}, find, 1.0), 2.0)
+        assert_equal(eval({1.0: 2.0}, find, 2.0), ":undefined")
+
+        assert_equal(eval({1: 2, 3.0: 4.0}, find, 1), 2)
+        assert_equal(eval({1: 2, 3.0: 4.0}, find, 3.0), 4.0)
+        assert_equal(eval({1.0: 2.0}, find, 2.0), ":undefined")
+
+        assert_equal(eval({C('a'): 2}, find, C('a')), 2)
+        assert_equal(eval({C('a'): 2}, find, 2), ":undefined")
+
+        assert_equal(eval({"abc": 2}, find, "abc"), 2)
+        assert_equal(eval({"abc": 2}, find, 2), ":undefined")
+
+        # Tuples must be used instead of lists as dictionary keys due to a limitation in python
+        # Trailing , is necessary in tuples of size 1 or else they will be interpreted as an expression
+        assert_equal(eval({(1,): 2}, find, [1]), 2)
+        assert_equal(eval({(1,): 2}, find, 2), ":undefined")
+        assert_equal(eval({(1.0,): 2}, find, [1.0]), 2)
+        assert_equal(eval({(1.0,): 2}, find, 2), ":undefined")
+        assert_equal(eval({(1, 2.0): 2}, find, [1, 2.0]), 2)
+        assert_equal(eval({(1, 2.0): 2}, find, 2), ":undefined")
+
+        # frozenset must be used instead of dicts as dict keys due to a limitation in python
+        assert_equal(eval({frozenset({3: 4}.items()): 2}, find, {3: 4}), 2)
+        assert_equal(eval({frozenset({3: 4}.items()): 2}, find, 2), ":undefined")
+
+        assert_equal(eval({QuotedSymbol('a'): 2}, find, QuotedSymbol('a')), 2)
+        assert_equal(eval({QuotedSymbol('a'): 2}, find, 2), ":undefined")
 
 class IndexTests(TestCase):
     def test_index_list_integer(self):
