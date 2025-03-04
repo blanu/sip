@@ -1,3 +1,5 @@
+from encodings import undefined
+
 import sys
 
 from sip.api import set_port, eval, evalNoun
@@ -430,6 +432,29 @@ class TransposeTests(TestCase):
         assert_equal(eval([[1, 2], [3, 4]], transpose), [[1, 3], [2, 4]])
         assert_equal(eval([[1.0, 2.0], [3.0, 4.0]], transpose), [[1.0, 3.0], [2.0, 4.0]])
         # assert_equal(eval([[1, 2.0], [3, 4.0]], transpose), [[1, 3], [2.0, 4.0]])
+
+class UndefinedTests(TestCase):
+    def test_undefined_integer(self):
+        assert_equal(eval(0, undefined), 0)
+
+    def test_undefined_real(self):
+        assert_equal(eval(0.0, undefined), 0)
+
+    def test_undefined_list(self):
+        assert_equal(eval([], undefined), 0)
+        assert_equal(eval([0], undefined), 0)
+        assert_equal(eval([0.0], undefined), 0)
+        assert_equal(eval([0.0, 1], undefined), 0)
+
+    def test_undefined_character(self):
+        assert_equal(eval(C('a'), undefined), 0)
+
+    def test_undefined_string(self):
+        assert_equal(eval('abac', undefined), 0)
+
+    def test_undefined_quoted_symbol(self):
+        assert_equal(eval(QuotedSymbol("x"), undefined), 0)
+        assert_equal(eval(QuotedSymbol("undefined"), undefined), 1)
 
 class UniqueTests(TestCase):
     def test_unique_list(self):
