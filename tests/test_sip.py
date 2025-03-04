@@ -2,7 +2,7 @@ import sys
 
 from sip.api import set_port, eval, evalNoun
 from testify import TestCase, assert_equal, assert_raises
-from iota.api import C
+from iota.api import C, QuotedSymbol
 from iota.symbols import  *
 import numpy as np # This is just for 32-bit floating-point math
 
@@ -278,6 +278,9 @@ class FormatTests(TestCase):
 
     def test_format_string(self):
         assert_equal(eval("abc", iformat), "abc")
+
+    def test_format_quoted_symbol(self):
+        assert_equal(eval(QuotedSymbol("x"), iformat), ":x")
 
 class GradeDownTests(TestCase):
     def test_gradeDown_word_array(self):
@@ -730,7 +733,8 @@ class FormTests(TestCase):
         assert_equal(int(eval("1.23", form, 1.0) * 100), 123) # Straightforward comparison doesn't work due to floating point noise
         assert_equal(eval("x", form, C('x')), 'x')
         assert_equal(eval("string", form, ""), "string")
-        # FIXME - symbols
+        assert_equal(eval("symbol", form, QuotedSymbol("x")), ":symbol")
+        assert_equal(eval(":symbol", form, QuotedSymbol("x")), ":symbol")
 
     def test_form_integer(self):
         assert_equal(eval("0", form, 0), 0)
@@ -759,6 +763,20 @@ class FormTests(TestCase):
     def test_form_string(self):
         assert_equal(eval("a", form, ""), "a")
         assert_equal(eval("ab", form, ""), "ab")
+
+    def test_form_symbol(self):
+        assert_equal(eval("x", form, QuotedSymbol("x")), ":x")
+        assert_equal(eval(":x", form, QuotedSymbol("x")), ":x")
+        assert_equal(eval("y", form, QuotedSymbol("x")), ":y")
+        assert_equal(eval("z", form, QuotedSymbol("x")), ":z")
+        assert_equal(eval("f", form, QuotedSymbol("x")), ":f")
+        assert_equal(eval("undefined", form, QuotedSymbol("x")), ":undefined")
+        assert_equal(eval("symbol", form, QuotedSymbol(":x")), ":symbol")
+        assert_equal(eval(":symbol", form, QuotedSymbol(":x")), ":symbol")
+        assert_equal(eval("symbol", form, QuotedSymbol("symbol")), ":symbol")
+        assert_equal(eval(":symbol", form, QuotedSymbol("symbol")), ":symbol")
+        assert_equal(eval("symbol", form, QuotedSymbol(":symbol")), ":symbol")
+        assert_equal(eval(":symbol", form, QuotedSymbol(":symbol")), ":symbol")
 
 class Format2Tests(TestCase):
     def test_format2_integer(self):
@@ -912,6 +930,11 @@ class Format2Tests(TestCase):
         assert_equal(eval("abc", format2, -4.0), " abc")
         assert_equal(eval("abc", format2, 4.5), "abc ")
         assert_equal(eval("abc", format2, -4.5), " abc")
+
+    def test_format2_quoted_symbol(self):
+        assert_equal(eval(QuotedSymbol("x"), format2, 0), ":x")
+        assert_equal(eval(QuotedSymbol("x"), format2, 4), ":x  ")
+        assert_equal(eval(QuotedSymbol("x"), format2, -4), "  :x")
 
 class FindTests(TestCase):
     def test_find_list_integer(self):
