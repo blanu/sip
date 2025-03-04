@@ -521,43 +521,48 @@ class CutTests(TestCase):
 class DivideTests(TestCase):
     def test_divide_integer_integer(self):
         assert_equal(eval(1, divide, 2), 1.0 / 2.0)
-        with assert_raises(Exception):
-            eval(1, divide, 0)
+        assert_equal(eval(1, divide, 0), ":undefined")
 
     def test_divide_integer_real(self):
         assert_equal(eval(1, divide, 2.0), 0.5)
-        with assert_raises(Exception):
-            eval(1, divide, 0)
+        assert_equal(eval(1, divide, 0.0), ":undefined")
 
     def test_divide_real_integer(self):
         assert_equal(eval(1.0, divide, -1), -1.0)
-        with assert_raises(Exception):
-            eval(1.0, divide, 0)
+        assert_equal(eval(1.0, divide, 0), ":undefined")
         assert_equal(eval(1.0, divide, 2.0), 0.5)
-        with assert_raises(Exception):
-            (eval(1.0, divide, 0))
 
     def test_divide_integer_list(self):
         assert_equal(eval(1, divide, [2, 4]), [1.0 / 2.0, 1.0 / 4.0])
-        with assert_raises(Exception):
-            eval(1, divide, [0, 3])
+        assert_equal(eval(1, divide, [0, 3]), ":undefined")
         assert_equal(eval(1, divide, [2.0, 4.0]), [1.0 / 2.0, 1.0 / 4.0])
-        with assert_raises(Exception):
-            eval(1, divide, [0.0, 3.0])
+        assert_equal(eval(1, divide, [0.0, 4.0]), [":undefined", 1.0 / 4.0])
         assert_equal(eval(1, divide, [2, 4.0]), [1.0 / 2.0, 1.0 / 4.0])
-        with assert_raises(Exception):
-            eval(1, divide, [0, 3.0])
+        assert_equal(eval(1, divide, [0, 4.0]), [":undefined", 1.0 / 4.0])
 
     def test_divide_real_list(self):
         assert_equal(eval(1.0, divide, [2, 4]), [1.0 / 2.0, 1.0 / 4.0])
+        assert_equal(eval(1.0, divide, [0, 4]), [":undefined", 1.0 / 4.0])
         assert_equal(eval(1.0, divide, [2.0, 4.0]), [1.0/2.0, 1.0 / 4.0])
-        assert_equal(eval(1, divide, [2, 4.0]), [1.0 / 2.0, 1.0 / 4.0])
+        assert_equal(eval(1.0, divide, [0.0, 4.0]), [":undefined", 1.0 / 4.0])
+        assert_equal(eval(1.0, divide, [2, 4.0]), [1.0 / 2.0, 1.0 / 4.0])
+        assert_equal(eval(1.0, divide, [0.0, 4]), [":undefined", 1.0 / 4.0])
 
     def test_divide_list_integer(self):
         assert_equal(eval([2, 4], divide, 1), [2, 4])
+        assert_equal(eval([2, 4], divide, 0), ":undefined")
+        assert_equal(eval([2.0, 4.0], divide, 1), [2, 4])
+        assert_equal(eval([2.0, 4.0], divide, 0), ":undefined")
+        assert_equal(eval([2, 4.0], divide, 1), [2, 4])
+        assert_equal(eval([2, 4.0], divide, 0), ":undefined")
 
     def test_divide_list_real(self):
         assert_equal(eval([2, 4], divide, 1.0), [2, 4])
+        assert_equal(eval([2, 4], divide, 0.0), ":undefined")
+        assert_equal(eval([2.0, 4.0], divide, 1.0), [2, 4])
+        assert_equal(eval([2.0, 4.0], divide, 0.0), ":undefined")
+        assert_equal(eval([2, 4.0], divide, 1.0), [2, 4])
+        assert_equal(eval([2, 4.0], divide, 0.0), [":undefined", ":undefined"])
 
     def test_divide_list_list(self):
         assert_equal(eval([2, 4], divide, [2, 4]), [1, 1])
@@ -569,6 +574,15 @@ class DivideTests(TestCase):
         assert_equal(eval([2, 4.0], divide, [2, 4]), [1, 1])
         assert_equal(eval([2, 4.0], divide, [2.0, 4.0]), [1, 1])
         assert_equal(eval([2, 4.0], divide, [2, 4.0]), [1, 1.0])
+        assert_equal(eval([2, 4], divide, [0, 1]), [":undefined", 4])
+        assert_equal(eval([2, 4], divide, [0.0, 1.0]), [":undefined", 4])
+        assert_equal(eval([2, 4], divide, [0.0, 1]), [":undefined", 4])
+        assert_equal(eval([2.0, 4.0], divide, [0, 1]), [":undefined", 4.0])
+        assert_equal(eval([2.0, 4.0], divide, [0.0, 1.0]), [":undefined", 4.0])
+        assert_equal(eval([2.0, 4.0], divide, [0.0, 1]), [":undefined", 4.0])
+        assert_equal(eval([2, 4.0], divide, [0, 1]), [":undefined", 4.0])
+        assert_equal(eval([2, 4.0], divide, [0.0, 1.0]), [":undefined", 4.0])
+        assert_equal(eval([2, 4.0], divide, [0.0, 1]), [":undefined", 4.0])
 
 class DropTests(TestCase):
     def test_drop_list(self):
@@ -802,14 +816,13 @@ class Format2Tests(TestCase):
         assert_equal(eval(0.0, format2, -5), "  0.0")
 
     def test_format2_list(self):
-#         # FIXME - should be :undefined
-#         # assert_equal(eval([], format2, 0), "[]")
-#         # assert_equal(eval([], format2, 1), "[]")
-#         # assert_equal(eval([], format2, -1), "[]")
-#         # assert_equal(eval([], format2, 2), "[]")
-#         # assert_equal(eval([], format2, -2), "[]")
-#         # assert_equal(eval([], format2, 3), "[] ")
-#         # assert_equal(eval([], format2, -3), " []")
+        assert_equal(eval([], format2, 0), ":undefined")
+        assert_equal(eval([], format2, 1), ":undefined")
+        assert_equal(eval([], format2, -1), ":undefined")
+        assert_equal(eval([], format2, 2), ":undefined")
+        assert_equal(eval([], format2, -2), ":undefined")
+        assert_equal(eval([], format2, 3), ":undefined")
+        assert_equal(eval([], format2, -3), ":undefined")
 
         assert_equal(eval([0], format2, 0), ["0"])
         assert_equal(eval([0], format2, 1), ["0"])
